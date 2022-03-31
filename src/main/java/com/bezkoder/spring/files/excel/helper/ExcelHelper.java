@@ -79,8 +79,8 @@ public class ExcelHelper {
         row.createCell(4).setCellValue(count);
         double percentage =((double) count/digitList.size())*100;
         row.createCell(5).setCellValue(percentage);
-        row.createCell(6).setCellValue(Math.log10((1/firstDigit)+1));
-        row.createCell(7).setCellValue(percentage-(Math.log10((1/firstDigit)+1)));
+        row.createCell(6).setCellValue(Math.log10(((double) 1/firstDigit)+1));
+        row.createCell(7).setCellValue(percentage-(Math.log10(((double) 1/firstDigit)+1)));
 
 
       }
