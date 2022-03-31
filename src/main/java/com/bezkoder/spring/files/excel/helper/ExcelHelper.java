@@ -9,10 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +31,11 @@ public class ExcelHelper {
 
     try (Workbook workbook = new XSSFWorkbook();
          ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      CellStyle style = workbook.createCellStyle();
+      DataFormat format = workbook.createDataFormat();
+      style.setDataFormat(format.getFormat("#.##0"));
+
+
       Sheet sheet = workbook.createSheet(SHEET);
 
       // Header
@@ -42,10 +44,20 @@ public class ExcelHelper {
       for (int col = 0; col < HEADERs.length; col++) {
         Cell cell = headerRow.createCell(col);
         cell.setCellValue(HEADERs[col]);
+        cell.setCellStyle(style);
       }
 
       int rowIdx = 1;
       List<Long> digitList = new ArrayList<>();
+      for (Finance finance : finances) {
+        long number = finance.getSales();
+        long firstDigit = 0;
+        while (number != 0) {
+          firstDigit = number % 10;
+          number = number / 10;
+        }
+        digitList.add(firstDigit);
+      }
       for (Finance finance : finances) {
         Row row = sheet.createRow(rowIdx++);
 
@@ -55,7 +67,6 @@ public class ExcelHelper {
             firstDigit = number % 10;
             number = number/10;
         }
-        digitList.add(firstDigit);
 
         row.createCell(0).setCellValue(finance.getId());
         row.createCell(1).setCellValue(finance.getDescription());
@@ -66,10 +77,10 @@ public class ExcelHelper {
                 .filter(x-> x == finalFirstDigit)
                 .count();
         row.createCell(4).setCellValue(count);
-        float percentage = ((count/digitList.size())*100);
-        row.createCell(5).setCellValue( new BigDecimal(percentage).floatValue());
-        row.createCell(6).setCellValue(new BigDecimal(Math.log10((1/firstDigit)+1)).floatValue());
-        row.createCell(7).setCellValue(new BigDecimal(percentage-(Math.log10((1/firstDigit)+1))).floatValue());
+        double percentage =((double) count/digitList.size())*100;
+        row.createCell(5).setCellValue(percentage);
+        row.createCell(6).setCellValue(Math.log10((1/firstDigit)+1));
+        row.createCell(7).setCellValue(percentage-(Math.log10((1/firstDigit)+1)));
 
 
       }
