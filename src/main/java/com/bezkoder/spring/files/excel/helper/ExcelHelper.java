@@ -31,9 +31,6 @@ public class ExcelHelper {
 
     try (Workbook workbook = new XSSFWorkbook();
          ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-      CellStyle style = workbook.createCellStyle();
-      DataFormat format = workbook.createDataFormat();
-      style.setDataFormat(format.getFormat("#.##0"));
 
 
       Sheet sheet = workbook.createSheet(SHEET);
@@ -44,7 +41,6 @@ public class ExcelHelper {
       for (int col = 0; col < HEADERs.length; col++) {
         Cell cell = headerRow.createCell(col);
         cell.setCellValue(HEADERs[col]);
-        cell.setCellStyle(style);
       }
 
       int rowIdx = 1;
@@ -78,9 +74,9 @@ public class ExcelHelper {
                 .count();
         row.createCell(4).setCellValue(count);
         double percentage =((double) count/digitList.size())*100;
-        row.createCell(5).setCellValue(percentage);
-        row.createCell(6).setCellValue(Math.log10(((double) 1/firstDigit)+1));
-        row.createCell(7).setCellValue(percentage-(Math.log10(((double) 1/firstDigit)+1)));
+        row.createCell(5).setCellValue(String.valueOf(percentage));
+        row.createCell(6).setCellValue(String.valueOf(Math.log10(((double) 1/firstDigit)+1)));
+        row.createCell(7).setCellValue(String.valueOf(percentage-(Math.log10(((double) 1/firstDigit)+1))));
 
 
       }
